@@ -211,8 +211,10 @@ def calc_frenet_paths(c_speed, c_d, c_d_d, c_d_dd, s0):
 
 def calc_global_paths(fplist, csp):
 
+    j = 0
     for fp in fplist:
 
+        #print(j)
         # calc global positions
         for i in range(len(fp.s)):
             ix, iy = csp.calc_position(fp.s[i])
@@ -224,6 +226,8 @@ def calc_global_paths(fplist, csp):
             fy = iy + di * math.sin(iyaw + math.pi / 2.0)
             fp.x.append(fx)
             fp.y.append(fy)
+            
+            #print(i, fx, fy)
 
         # calc yaw and ds
         for i in range(len(fp.x) - 1):
@@ -232,12 +236,19 @@ def calc_global_paths(fplist, csp):
             fp.yaw.append(math.atan2(dy, dx))
             fp.ds.append(math.sqrt(dx**2 + dy**2))
 
+            #print(i, math.atan2(dy, dx), math.sqrt(dx**2 + dy**2))
+
         fp.yaw.append(fp.yaw[-1])
         fp.ds.append(fp.ds[-1])
 
         # calc curvature
         for i in range(len(fp.yaw) - 1):
             fp.c.append((fp.yaw[i + 1] - fp.yaw[i]) / fp.ds[i])
+
+            #print( (fp.yaw[i + 1] - fp.yaw[i]) / fp.ds[i] )
+
+        #print(j, len(fp.s), len(fp.x) - 1, len(fp.yaw) - 1)
+        j += 1
 
     return fplist
 
@@ -312,6 +323,10 @@ def main():
     # way points
     wx = [0.0, 10.0, 20.5, 35.0, 70.5]
     wy = [0.0, -6.0, 5.0, 6.5, 0.0]
+
+    wx = [0.0, 10.0, 20.5, 30.0, 40.5]
+    wy = [0.0, 10.0, 20.0, 40.5, 70.0]
+
     # obstacle lists
     ob = np.array([[20.0, 10.0],
                    [30.0, 6.0],
@@ -331,7 +346,8 @@ def main():
 
     area = 20.0  # animation area length [m]
 
-    for i in range(SIM_LOOP):
+    #for i in range(SIM_LOOP):
+    for i in range(500):
         path = frenet_optimal_planning(
             csp, s0, c_speed, c_d, c_d_d, c_d_dd, ob)
 
